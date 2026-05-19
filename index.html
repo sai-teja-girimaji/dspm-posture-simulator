@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DSPM Posture Simulator — Azure AI Agent Data Exposure Risk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --navy: #0F172A;
+    --navy-soft: #1E293B;
+    --teal: #0D9488;
+    --teal-dark: #0B7A6F;
+    --teal-light: #CCFBF1;
+    --text: #0F172A;
+    --text-muted: #475569;
+    --text-faint: #64748B;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --green: #059669;
+    --amber: #D97706;
+    --orange: #EA580C;
+    --red: #DC2626;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  header.site-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 22px 32px;
+    border-bottom: 3px solid var(--teal);
+  }
+
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--teal) 0%, #14B8A6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #fff;
+    font-size: 18px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 4px 12px rgba(13,148,136,0.35);
+  }
+
+  .brand-text h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .brand-text p {
+    margin: 2px 0 0 0;
+    font-size: 12.5px;
+    color: #94A3B8;
+    font-weight: 400;
+  }
+
+  .header-tag {
+    font-size: 12px;
+    color: #94A3B8;
+    border: 1px solid #334155;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .layout { grid-template-columns: 1fr; }
+    main { padding: 20px; }
+    header.site-header { padding: 18px 20px; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+    gap: 12px;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.005em;
+  }
+
+  .card-subtitle {
+    font-size: 12.5px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group:last-child { margin-bottom: 0; }
+
+  .form-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .form-hint {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-weight: 400;
+    margin-top: 2px;
+    display: block;
+  }
+
+  .value-pill {
+    background: var(--teal-light);
+    color: var(--teal-dark);
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Sliders */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border);
+    outline: none;
+    margin: 6px 0;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: 3px solid #fff;
+    box-shadow: 0 1px 3px rgba(13,148,136,0.4), 0 0 0 1px var(--teal);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: 3px solid #fff;
+    box-shadow: 0 1px 3px rgba(13,148,136,0.4), 0 0 0 1px var(--teal);
+    cursor: pointer;
+  }
+
+  /* Selects */
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748B'%3e%3cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 18px;
+    padding-right: 38px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  select:hover { border-color: var(--teal); }
+  select:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
+  }
+
+  /* Checkboxes */
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 480px) {
+    .checkbox-grid { grid-template-columns: 1fr; }
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: #fff;
+    user-select: none;
+  }
+
+  .checkbox-item:hover {
+    border-color: var(--teal);
+    background: #F0FDFA;
+  }
+
+  .checkbox-item input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--teal);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .checkbox-item.checked {
+    background: #F0FDFA;
+    border-color: var(--teal);
+    color: var(--navy);
+  }
+
+  /* Score panel */
+  .score-hero {
+    text-align: center;
+    padding: 18px 0 22px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 22px;
+  }
+
+  .score-number {
+    font-size: 84px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease;
+  }
+
+  .score-out-of {
+    font-size: 22px;
+    color: var(--text-faint);
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  .score-label {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 6px 14px;
+    border-radius: 999px;
+    transition: all 0.3s ease;
+  }
+
+  .score-meta {
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+
+  /* Risk colors */
+  .risk-low { color: var(--green); }
+  .risk-medium { color: var(--amber); }
+  .risk-high { color: var(--orange); }
+  .risk-critical { color: var(--red); }
+
+  .badge-low { background: #D1FAE5; color: var(--green); }
+  .badge-medium { background: #FEF3C7; color: var(--amber); }
+  .badge-high { background: #FFEDD5; color: var(--orange); }
+  .badge-critical { background: #FEE2E2; color: var(--red); }
+
+  /* Sub-dimensions */
+  .sub-row {
+    margin-bottom: 14px;
+  }
+  .sub-row:last-child { margin-bottom: 4px; }
+
+  .sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+
+  .sub-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .sub-desc {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    font-weight: 400;
+    margin-left: 8px;
+  }
+
+  .sub-score {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: #F1F5F9;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.5s ease, background-color 0.3s ease;
+  }
+
+  .fill-low { background: var(--green); }
+  .fill-medium { background: var(--amber); }
+  .fill-high { background: var(--orange); }
+  .fill-critical { background: var(--red); }
+
+  /* Narrative */
+  .narrative {
+    background: #F8FAFC;
+    border-left: 3px solid var(--teal);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  /* Recommendations */
+  .rec-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rec-item:last-child { border-bottom: none; padding-bottom: 4px; }
+  .rec-item:first-child { padding-top: 4px; }
+
+  .rec-rank {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rec-content { flex: 1; min-width: 0; }
+
+  .rec-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 3px;
+  }
+
+  .rec-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .rec-reduction {
+    margin-top: 6px;
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--green);
+    background: #D1FAE5;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  /* Share box */
+  .share-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--teal-dark); }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--navy);
+    border-color: var(--border-strong);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--teal);
+    color: var(--teal-dark);
+  }
+
+  .btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .share-text {
+    width: 100%;
+    background: #F8FAFC;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'SF Mono', Monaco, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    min-height: 180px;
+    resize: vertical;
+    white-space: pre-wrap;
+  }
+
+  .share-text:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
+  }
+
+  footer.site-footer {
+    text-align: center;
+    padding: 28px 32px 36px;
+    font-size: 12.5px;
+    color: var(--text-faint);
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  footer.site-footer strong {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* Section divider in form */
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 22px 0;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 14px 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">D</div>
+      <div class="brand-text">
+        <h1>DSPM Posture Simulator</h1>
+        <p>Azure AI Agent Data Exposure Risk Assessment</p>
+      </div>
+    </div>
+    <div class="header-tag">Educational model · Weighted DSPM scoring</div>
+  </div>
+</header>
+
+<main>
+  <div class="layout">
+
+    <!-- INPUT COLUMN -->
+    <section>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Environment Inputs</h2>
+          <span class="card-subtitle">Tune to match your estate</span>
+        </div>
+
+        <p class="section-title">Estate Scale</p>
+
+        <div class="form-group">
+          <label class="form-label" for="storageAccounts">
+            <span>Azure Storage Accounts &amp; Blob containers</span>
+            <span class="value-pill" id="storageAccountsValue">75</span>
+          </label>
+          <input type="range" id="storageAccounts" min="1" max="500" value="75" />
+          <span class="form-hint">Total storage accounts and blob containers in the estate</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="sharepointSites">
+            <span>SharePoint sites accessible to AI agents</span>
+            <span class="value-pill" id="sharepointSitesValue">40</span>
+          </label>
+          <input type="range" id="sharepointSites" min="1" max="200" value="40" />
+          <span class="form-hint">Sites within indexing or grounding scope of any AI agent</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="agents">
+            <span>Active Copilot / agentic AI deployments</span>
+            <span class="value-pill" id="agentsValue">8</span>
+          </label>
+          <input type="range" id="agents" min="1" max="50" value="8" />
+          <span class="form-hint">Microsoft 365 Copilot, custom Copilots, Azure AI agents in production</span>
+        </div>
+
+        <div class="section-divider"></div>
+        <p class="section-title">Governance &amp; Controls</p>
+
+        <div class="form-group">
+          <label class="form-label" for="classification">
+            <span>Data classification coverage</span>
+            <span class="value-pill" id="classificationValue">35%</span>
+          </label>
+          <input type="range" id="classification" min="0" max="100" value="35" />
+          <span class="form-hint">Percentage of the data estate that has been classified or labelled</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="rbac">
+            <span>RBAC hygiene — identities with broad data access</span>
+          </label>
+          <select id="rbac">
+            <option value="tight">Tight — under 10%</option>
+            <option value="moderate" selected>Moderate — 10 to 30%</option>
+            <option value="loose">Loose — 30 to 60%</option>
+            <option value="ungoverned">Ungoverned — over 60%</option>
+          </select>
+          <span class="form-hint">Proportion of users, service principals or agents holding broad read scopes</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="dlp">
+            <span>DLP policy coverage</span>
+          </label>
+          <select id="dlp">
+            <option value="full">Full — applied across all sensitive workloads</option>
+            <option value="partial" selected>Partial — applied to select workloads</option>
+            <option value="minimal">Minimal — basic rules only</option>
+            <option value="none">None — no active DLP policies</option>
+          </select>
+          <span class="form-hint">Microsoft Purview, Defender for Cloud Apps, or equivalent DLP controls</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <span>Sensitive data categories present</span>
+            <span class="value-pill" id="categoriesValue">3</span>
+          </label>
+          <div class="checkbox-grid" id="categoryGrid">
+            <label class="checkbox-item"><input type="checkbox" value="PII" checked /> PII</label>
+            <label class="checkbox-item"><input type="checkbox" value="Credentials and Secrets" checked /> Credentials &amp; Secrets</label>
+            <label class="checkbox-item"><input type="checkbox" value="Financial Records" checked /> Financial Records</label>
+            <label class="checkbox-item"><input type="checkbox" value="Healthcare Data" /> Healthcare Data</label>
+            <label class="checkbox-item"><input type="checkbox" value="Legal and Contracts" /> Legal &amp; Contracts</label>
+            <label class="checkbox-item"><input type="checkbox" value="Source Code" /> Source Code</label>
+            <label class="checkbox-item"><input type="checkbox" value="Internal Strategy" /> Internal Strategy</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="discovery">
+            <span>Last data discovery exercise</span>
+          </label>
+          <select id="discovery">
+            <option value="30d">Within last 30 days</option>
+            <option value="6m" selected>Within last 6 months</option>
+            <option value="1y">Within last year</option>
+            <option value="never">Never performed</option>
+          </select>
+          <span class="form-hint">Most recent comprehensive data discovery and inventory exercise</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUTPUT COLUMN -->
+    <section>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Agent Data Exposure Risk</h2>
+          <span class="card-subtitle" id="riskMeta">Composite weighted score</span>
+        </div>
+
+        <div class="score-hero">
+          <div>
+            <span class="score-number" id="scoreNumber">0</span><span class="score-out-of">/100</span>
+          </div>
+          <div class="score-label" id="scoreLabel">LOW</div>
+          <div class="score-meta" id="scoreMeta">Recalculating…</div>
+        </div>
+
+        <div id="subDimensions">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Risk Narrative</h2>
+          <span class="card-subtitle">What this means for your estate</span>
+        </div>
+        <p class="narrative" id="narrative">Adjust the inputs to generate a narrative.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Prioritised Recommendations</h2>
+          <span class="card-subtitle">Highest-leverage actions</span>
+        </div>
+        <div id="recommendations"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Shareable Summary</h2>
+          <span class="card-subtitle">Copy for LinkedIn or reports</span>
+        </div>
+        <div class="share-actions">
+          <button class="btn btn-primary" id="copyBtn">Copy to clipboard</button>
+          <button class="btn btn-secondary" id="downloadBtn">Download as .txt</button>
+        </div>
+        <textarea class="share-text" id="shareText" readonly></textarea>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <strong>This simulator uses a weighted risk model based on common DSPM frameworks. It is an educational tool, not a vendor product.</strong>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ---------- Sub-dimension config ----------
+  const SUB_DIMENSIONS = [
+    { key: 'discovery',  label: 'Discovery Gap',           desc: 'unclassified / unknown data',  weight: 0.20 },
+    { key: 'access',     label: 'Access Blast Radius',     desc: 'breadth of agent reach',       weight: 0.25 },
+    { key: 'policy',     label: 'Policy Coverage Gap',     desc: 'data without DLP protection',  weight: 0.20 },
+    { key: 'agents',     label: 'Agent Proliferation Risk',desc: 'exposure from AI footprint',   weight: 0.20 },
+    { key: 'lag',        label: 'Remediation Lag',         desc: 'staleness of last review',     weight: 0.15 }
+  ];
+
+  // ---------- Lookup tables ----------
+  const RBAC_BASE = { tight: 12, moderate: 38, loose: 68, ungoverned: 92 };
+  const RBAC_LABEL = { tight: 'tight', moderate: 'moderately governed', loose: 'loose', ungoverned: 'ungoverned' };
+  const DLP_BASE  = { full: 8, partial: 42, minimal: 72, none: 95 };
+  const DLP_LABEL = { full: 'comprehensive', partial: 'partial', minimal: 'minimal', none: 'absent' };
+  const DISCOVERY_BASE = { '30d': 5, '6m': 32, '1y': 65, 'never': 98 };
+  const DISCOVERY_LABEL = { '30d': 'within the last 30 days', '6m': 'within the last 6 months', '1y': 'over six months ago', 'never': 'never performed' };
+
+  // Category sensitivity weights (some carry more regulatory / breach impact)
+  const CATEGORY_WEIGHT = {
+    'Credentials and Secrets': 22,
+    'Healthcare Data':         18,
+    'Financial Records':       16,
+    'PII':                     14,
+    'Legal and Contracts':     12,
+    'Source Code':             10,
+    'Internal Strategy':       8
+  };
+
+  // ---------- DOM ----------
+  const $ = (id) => document.getElementById(id);
+  const storageAccounts = $('storageAccounts');
+  const sharepointSites = $('sharepointSites');
+  const agents = $('agents');
+  const classification = $('classification');
+  const rbac = $('rbac');
+  const dlp = $('dlp');
+  const discovery = $('discovery');
+  const categoryGrid = $('categoryGrid');
+
+  // ---------- Helpers ----------
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+  function getSelectedCategories() {
+    return Array.from(categoryGrid.querySelectorAll('input[type="checkbox"]'))
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
+  }
+
+  function riskTier(score) {
+    if (score <= 30) return { tier: 'low',      label: 'LOW',      cls: 'risk-low',      badge: 'badge-low',      fill: 'fill-low' };
+    if (score <= 60) return { tier: 'medium',   label: 'MEDIUM',   cls: 'risk-medium',   badge: 'badge-medium',   fill: 'fill-medium' };
+    if (score <= 80) return { tier: 'high',     label: 'HIGH',     cls: 'risk-high',     badge: 'badge-high',     fill: 'fill-high' };
+    return              { tier: 'critical', label: 'CRITICAL', cls: 'risk-critical', badge: 'badge-critical', fill: 'fill-critical' };
+  }
+
+  // ---------- Risk model ----------
+  function computeModel(inputs) {
+    const {
+      storage, sites, agents: agentCount,
+      classifPct, rbacKey, dlpKey, categories, discoveryKey
+    } = inputs;
+
+    // Normalised scale 0-100 of estate footprint
+    const storageScale = clamp((storage / 500) * 100, 0, 100);
+    const siteScale    = clamp((sites   / 200) * 100, 0, 100);
+    const agentScale   = clamp((agentCount / 50) * 100, 0, 100);
+    const estateScale  = (storageScale * 0.5) + (siteScale * 0.5);
+
+    // Category sensitivity factor 0-100
+    const catRaw = categories.reduce((s, c) => s + (CATEGORY_WEIGHT[c] || 0), 0);
+    const catFactor = clamp(catRaw, 0, 100);
+
+    const dlpBase = DLP_BASE[dlpKey];
+    const rbacBase = RBAC_BASE[rbacKey];
+    const discoveryBase = DISCOVERY_BASE[discoveryKey];
+
+    // 1. Discovery Gap: classification inverse + discovery age
+    const unclassified = 100 - classifPct;
+    const discoveryGap = clamp(unclassified * 0.65 + discoveryBase * 0.35, 0, 100);
+
+    // 2. Access Blast Radius: RBAC + estate + agent count modulated by category sensitivity
+    let access = rbacBase * 0.55 + estateScale * 0.25 + agentScale * 0.10 + (catFactor / 100) * 10;
+    // amplify if RBAC loose AND many agents
+    if ((rbacKey === 'loose' || rbacKey === 'ungoverned') && agentCount >= 15) access += 6;
+    const accessRisk = clamp(access, 0, 100);
+
+    // 3. Policy Coverage Gap: DLP base, lifted by category sensitivity and classification gap
+    let policy = dlpBase * 0.65 + (catFactor / 100) * 25 + (unclassified / 100) * 15;
+    const policyGap = clamp(policy, 0, 100);
+
+    // 4. Agent Proliferation Risk: agent count, magnified when controls are weak
+    const weakControls = (rbacBase + dlpBase) / 2; // higher = weaker
+    let agentRisk = agentScale * 0.55 + weakControls * 0.30 + (catFactor / 100) * 15;
+    if (agentCount >= 20) agentRisk += 4;
+    if (agentCount >= 35) agentRisk += 4;
+    const agentProlif = clamp(agentRisk, 0, 100);
+
+    // 5. Remediation Lag: discovery age dominates, dragged by DLP and classification gap
+    let lag = discoveryBase * 0.65 + (dlpBase / 100) * 20 + (unclassified / 100) * 15;
+    const remediationLag = clamp(lag, 0, 100);
+
+    const sub = {
+      discovery: Math.round(discoveryGap),
+      access:    Math.round(accessRisk),
+      policy:    Math.round(policyGap),
+      agents:    Math.round(agentProlif),
+      lag:       Math.round(remediationLag)
+    };
+
+    // Composite
+    const composite = SUB_DIMENSIONS.reduce((acc, d) => acc + sub[d.key] * d.weight, 0);
+    const overall = Math.round(clamp(composite, 0, 100));
+
+    return { sub, overall, catFactor, estateScale, unclassified, weakControls };
+  }
+
+  // ---------- Narrative ----------
+  function buildNarrative(inputs, model) {
+    const { storage, sites, agents: agentCount, classifPct, rbacKey, dlpKey, categories, discoveryKey } = inputs;
+    const { overall, sub } = model;
+    const tier = riskTier(overall);
+
+    // Identify dominant driver
+    const driverList = SUB_DIMENSIONS
+      .map(d => ({ key: d.key, label: d.label, contribution: sub[d.key] * d.weight }))
+      .sort((a, b) => b.contribution - a.contribution);
+    const top = driverList[0];
+    const second = driverList[1];
+
+    const catCount = categories.length;
+    const hasCreds = categories.includes('Credentials and Secrets');
+    const hasHealth = categories.includes('Healthcare Data');
+    const hasFin = categories.includes('Financial Records');
+    const hasPII = categories.includes('PII');
+    const hasCode = categories.includes('Source Code');
+
+    // Opening framing
+    const openings = {
+      low:      `This estate is in a defensible posture. With ${agentCount} active AI deployment${agentCount === 1 ? '' : 's'} reaching across roughly ${storage} storage accounts and ${sites} SharePoint sites, the combination of ${DLP_LABEL[dlpKey]} DLP coverage and ${RBAC_LABEL[rbacKey]} RBAC keeps agent exposure largely bounded.`,
+      medium:   `The estate is exposed but not yet acute. ${agentCount} AI deployment${agentCount === 1 ? '' : 's'} operate over ${storage} storage accounts and ${sites} SharePoint sites, with ${DLP_LABEL[dlpKey]} DLP coverage and ${RBAC_LABEL[rbacKey]} access controls leaving real gaps an agent could traverse.`,
+      high:     `This is a materially exposed estate. ${agentCount} AI deployment${agentCount === 1 ? '' : 's'} now operate against ${storage} storage accounts and ${sites} SharePoint sites under ${DLP_LABEL[dlpKey]} DLP coverage and ${RBAC_LABEL[rbacKey]} access controls — agents almost certainly have line-of-sight to sensitive data they should not.`,
+      critical: `This estate is in a critical posture for agent-driven exposure. ${agentCount} AI deployment${agentCount === 1 ? '' : 's'} are working across ${storage} storage accounts and ${sites} SharePoint sites with ${DLP_LABEL[dlpKey]} DLP and ${RBAC_LABEL[rbacKey]} access controls — the conditions for an agent to surface or exfiltrate sensitive data are present today.`
+    };
+
+    // Driver sentence
+    const driverPhrases = {
+      discovery: `Only ${classifPct}% of the estate is classified and the last discovery exercise was ${DISCOVERY_LABEL[discoveryKey]}, meaning a meaningful share of what agents can read is effectively unknown to the security team`,
+      access:    `${RBAC_LABEL[rbacKey].charAt(0).toUpperCase() + RBAC_LABEL[rbacKey].slice(1)} RBAC means agents inherit broad identity-level reach, which compounds across ${storage} storage targets and ${sites} SharePoint sites`,
+      policy:    `${DLP_LABEL[dlpKey].charAt(0).toUpperCase() + DLP_LABEL[dlpKey].slice(1)} DLP coverage leaves sensitive content unprotected at the output and egress layer, exactly where agent responses surface`,
+      agents:    `The footprint of ${agentCount} active AI deployment${agentCount === 1 ? '' : 's'} is the dominant exposure surface — every additional agent multiplies effective access paths`,
+      lag:       `Posture has drifted: the last discovery exercise was ${DISCOVERY_LABEL[discoveryKey]} and policy coverage is ${DLP_LABEL[dlpKey]}, so today's controls are calibrated to yesterday's estate`
+    };
+
+    // Category sentence
+    let catSentence = '';
+    if (catCount === 0) {
+      catSentence = 'No sensitive categories were selected, which is unusual for a real Azure estate at this scale — re-examine whether classification is undercounting the actual exposure.';
+    } else {
+      const flag = [];
+      if (hasCreds) flag.push('credentials and secrets in scope means a single prompt-injection or agent jailbreak can yield reusable access');
+      if (hasHealth) flag.push('healthcare data brings HIPAA / regional health-data obligations onto every agent response');
+      if (hasFin) flag.push('financial records expose the organisation to SOX, PCI and customer-trust impact');
+      if (!hasCreds && !hasHealth && !hasFin && hasPII) flag.push('PII is the dominant regulated category and drives notification obligations on disclosure');
+      if (!hasCreds && !hasHealth && !hasFin && !hasPII && hasCode) flag.push('source code disclosure risks IP loss and may expose hard-coded secrets');
+      if (flag.length === 0) flag.push(`${catCount} sensitive categories are in scope`);
+      catSentence = `Note that ${flag[0]}${flag[1] ? ', and ' + flag[1] : ''}.`;
+    }
+
+    // Closing — pivot on top vs second driver
+    let closing = '';
+    if (tier.tier === 'low') {
+      closing = `The remaining ${overall}-point exposure is concentrated in ${top.label.toLowerCase()} — maintain the current cadence and the score holds.`;
+    } else if (tier.tier === 'medium') {
+      closing = `The largest single lever is ${top.label.toLowerCase()}, followed by ${second.label.toLowerCase()} — addressing both in the next quarter would materially shift the score.`;
+    } else if (tier.tier === 'high') {
+      closing = `The combination of ${top.label.toLowerCase()} and ${second.label.toLowerCase()} is doing most of the damage — these two need executive-sponsored remediation, not BAU tickets.`;
+    } else {
+      closing = `${top.label} is the dominant driver and is being amplified by ${second.label.toLowerCase()} — an incident here would be hard to bound, contain or even detect with the current controls.`;
+    }
+
+    return `${openings[tier.tier]} ${driverPhrases[top.key]}. ${catSentence} ${closing}`;
+  }
+
+  // ---------- Recommendations ----------
+  function buildRecommendations(inputs, model) {
+    const { classifPct, rbacKey, dlpKey, categories, discoveryKey, agents: agentCount } = inputs;
+    const { sub } = model;
+
+    const recs = [];
+
+    // Candidate recs with conditional eligibility + estimated reduction
+    if (sub.discovery >= 40 || classifPct < 70) {
+      const reduction = classifPct < 30 ? 14 : classifPct < 60 ? 10 : 6;
+      recs.push({
+        score: sub.discovery + (100 - classifPct) * 0.4,
+        title: `Run a Purview data discovery and classification sweep across the estate`,
+        desc: `Classification is at ${classifPct}%. Stand up Microsoft Purview (or equivalent) to scan storage accounts and SharePoint, auto-label by sensitivity, and surface unknown sensitive data before agents see it first.`,
+        reduction
+      });
+    }
+
+    if (rbacKey === 'loose' || rbacKey === 'ungoverned') {
+      const reduction = rbacKey === 'ungoverned' ? 16 : 11;
+      recs.push({
+        score: sub.access + 20,
+        title: `Tighten RBAC and apply just-in-time access for AI agent identities`,
+        desc: `${rbacKey === 'ungoverned' ? 'Over 60%' : '30 to 60%'} of identities hold broad data access. Run an access review, remove standing broad roles, and scope agent service principals to least privilege with Entra PIM for human reviewers.`,
+        reduction
+      });
+    } else if (rbacKey === 'moderate' && agentCount >= 10) {
+      recs.push({
+        score: sub.access + 8,
+        title: `Right-size agent identities and segregate their data scope from human users`,
+        desc: `With ${agentCount} agents in production, treat each agent identity as a distinct principal with its own scoped permissions rather than inheriting user-style broad roles.`,
+        reduction: 7
+      });
+    }
+
+    if (dlpKey === 'none' || dlpKey === 'minimal') {
+      const reduction = dlpKey === 'none' ? 15 : 10;
+      recs.push({
+        score: sub.policy + 18,
+        title: `Roll out DLP policies for the sensitive categories agents can reach`,
+        desc: `DLP coverage is ${DLP_LABEL[dlpKey]}. Start with the highest-impact categories (${categories.slice(0,3).join(', ') || 'sensitive data'}) and enforce at the egress and Copilot response layer — not just at storage.`,
+        reduction
+      });
+    } else if (dlpKey === 'partial') {
+      recs.push({
+        score: sub.policy + 6,
+        title: `Extend DLP from select workloads to the full agent-reachable surface`,
+        desc: `DLP is partial today. Map every workload an agent grounds against and ensure policy coverage follows the agent, not just the underlying repository.`,
+        reduction: 7
+      });
+    }
+
+    if (agentCount >= 15) {
+      recs.push({
+        score: sub.agents + 10,
+        title: `Establish an agent registry with sensitivity-tier approval gates`,
+        desc: `${agentCount} agents is past the point where governance can be informal. Require every new agent to declare its data scope and pass a sensitivity-tier review before production.`,
+        reduction: agentCount >= 30 ? 10 : 7
+      });
+    }
+
+    if (discoveryKey === 'never' || discoveryKey === '1y') {
+      recs.push({
+        score: sub.lag + 12,
+        title: `Schedule a recurring quarterly data discovery cadence`,
+        desc: `Last discovery was ${DISCOVERY_LABEL[discoveryKey]}. AI agent scope expands faster than human-driven access — quarterly automated discovery is the floor, not the ceiling.`,
+        reduction: 8
+      });
+    }
+
+    if (categories.includes('Credentials and Secrets')) {
+      recs.push({
+        score: 75 + sub.policy * 0.2,
+        title: `Sweep agent-reachable data for credentials and secrets`,
+        desc: `Credentials and secrets are in scope. Run secret scanning across storage accounts and SharePoint and rotate anything an agent could surface. Pair with response-level guardrails.`,
+        reduction: 9
+      });
+    }
+
+    if (categories.includes('Healthcare Data') && (dlpKey === 'partial' || dlpKey === 'minimal' || dlpKey === 'none')) {
+      recs.push({
+        score: 70 + sub.policy * 0.2,
+        title: `Apply healthcare-data-specific DLP and audit trails for every agent interaction`,
+        desc: `Healthcare data plus less-than-full DLP is a compliance-flag combination. Ensure agent prompts and responses involving health data are logged and DLP-policed end-to-end.`,
+        reduction: 8
+      });
+    }
+
+    // Fallback when posture is already good
+    if (recs.length === 0) {
+      recs.push({
+        score: 50,
+        title: `Stress-test the current posture with red-team agent prompts`,
+        desc: `Controls look strong. Validate them by running adversarial prompt-injection and over-broad-query scenarios against your production agents to confirm DLP and RBAC hold under pressure.`,
+        reduction: 4
+      });
+      recs.push({
+        score: 45,
+        title: `Tighten classification from ${classifPct}% toward 90%+`,
+        desc: `Close the remaining classification gap so DLP and access controls have full coverage to act on.`,
+        reduction: 5
+      });
+      recs.push({
+        score: 40,
+        title: `Codify the agent governance model in policy`,
+        desc: `Operational practice is good — capture it as written policy so it survives team turnover and audit.`,
+        reduction: 3
+      });
+    }
+
+    // Sort by impact and take top 3
+    recs.sort((a, b) => b.score - a.score);
+    return recs.slice(0, 3);
+  }
+
+  // ---------- Renderers ----------
+  function renderSubDimensions(sub) {
+    const container = $('subDimensions');
+    container.innerHTML = SUB_DIMENSIONS.map(d => {
+      const val = sub[d.key];
+      const tier = riskTier(val);
+      return `
+        <div class="sub-row">
+          <div class="sub-header">
+            <span class="sub-name">${d.label}<span class="sub-desc">${d.desc}</span></span>
+            <span class="sub-score ${tier.cls}">${val}</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill ${tier.fill}" style="width: ${val}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderScore(overall) {
+    const tier = riskTier(overall);
+    const num = $('scoreNumber');
+    const label = $('scoreLabel');
+    const meta = $('scoreMeta');
+
+    num.textContent = overall;
+    num.className = 'score-number ' + tier.cls;
+    label.textContent = tier.label;
+    label.className = 'score-label ' + tier.badge;
+
+    const phrase = {
+      low: 'Defensible posture — maintain controls and cadence.',
+      medium: 'Exposed but containable — prioritise the top drivers.',
+      high: 'Materially exposed — coordinated remediation required.',
+      critical: 'Critical exposure — incident conditions present today.'
+    }[tier.tier];
+    meta.textContent = phrase;
+  }
+
+  function renderRecommendations(recs) {
+    const c = $('recommendations');
+    c.innerHTML = recs.map((r, i) => `
+      <div class="rec-item">
+        <div class="rec-rank">${i + 1}</div>
+        <div class="rec-content">
+          <div class="rec-title">${r.title}</div>
+          <div class="rec-desc">${r.desc}</div>
+          <div class="rec-reduction">−${r.reduction} pts estimated risk reduction</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderNarrative(text) {
+    $('narrative').textContent = text;
+  }
+
+  function buildShareText(inputs, model, recs) {
+    const { overall, sub } = model;
+    const tier = riskTier(overall);
+    const cats = inputs.categories.length ? inputs.categories.join(', ') : 'None selected';
+    const rbacText = { tight: 'Tight (<10%)', moderate: 'Moderate (10-30%)', loose: 'Loose (30-60%)', ungoverned: 'Ungoverned (>60%)' }[inputs.rbacKey];
+    const dlpText  = { full: 'Full', partial: 'Partial', minimal: 'Minimal', none: 'None' }[inputs.dlpKey];
+    const discText = { '30d': 'Last 30 days', '6m': 'Last 6 months', '1y': 'Last year', 'never': 'Never' }[inputs.discoveryKey];
+
+    return [
+      `DSPM Posture Simulator — Azure AI Agent Exposure Assessment`,
+      `${'='.repeat(58)}`,
+      ``,
+      `OVERALL RISK SCORE: ${overall}/100 (${tier.label})`,
+      ``,
+      `SUB-DIMENSION BREAKDOWN`,
+      `  Discovery Gap            ${String(sub.discovery).padStart(3)} / 100`,
+      `  Access Blast Radius      ${String(sub.access).padStart(3)} / 100`,
+      `  Policy Coverage Gap      ${String(sub.policy).padStart(3)} / 100`,
+      `  Agent Proliferation Risk ${String(sub.agents).padStart(3)} / 100`,
+      `  Remediation Lag          ${String(sub.lag).padStart(3)} / 100`,
+      ``,
+      `ENVIRONMENT INPUTS`,
+      `  Storage accounts / containers : ${inputs.storage}`,
+      `  SharePoint sites (agent-reach): ${inputs.sites}`,
+      `  Active AI agents              : ${inputs.agents}`,
+      `  Classification coverage       : ${inputs.classifPct}%`,
+      `  RBAC hygiene                  : ${rbacText}`,
+      `  DLP policy coverage           : ${dlpText}`,
+      `  Last data discovery           : ${discText}`,
+      `  Sensitive categories          : ${cats}`,
+      ``,
+      `TOP 3 PRIORITISED ACTIONS`,
+      ...recs.map((r, i) => `  ${i + 1}. ${r.title}\n     Estimated reduction: −${r.reduction} pts`),
+      ``,
+      `Generated with the DSPM Posture Simulator — an educational weighted-risk model.`,
+      `Not a vendor product. Use to frame conversations, not as an audit substitute.`
+    ].join('\n');
+  }
+
+  // ---------- Update binding for checkbox visual state ----------
+  function refreshCheckboxStyles() {
+    categoryGrid.querySelectorAll('.checkbox-item').forEach(label => {
+      const cb = label.querySelector('input');
+      label.classList.toggle('checked', cb.checked);
+    });
+    $('categoriesValue').textContent = getSelectedCategories().length;
+  }
+
+  // ---------- Main update ----------
+  function update() {
+    // Update value pills
+    $('storageAccountsValue').textContent = storageAccounts.value;
+    $('sharepointSitesValue').textContent = sharepointSites.value;
+    $('agentsValue').textContent = agents.value;
+    $('classificationValue').textContent = classification.value + '%';
+    refreshCheckboxStyles();
+
+    const inputs = {
+      storage: parseInt(storageAccounts.value, 10),
+      sites: parseInt(sharepointSites.value, 10),
+      agents: parseInt(agents.value, 10),
+      classifPct: parseInt(classification.value, 10),
+      rbacKey: rbac.value,
+      dlpKey: dlp.value,
+      discoveryKey: discovery.value,
+      categories: getSelectedCategories()
+    };
+
+    const model = computeModel(inputs);
+    const recs = buildRecommendations(inputs, model);
+    const narrative = buildNarrative(inputs, model);
+
+    renderScore(model.overall);
+    renderSubDimensions(model.sub);
+    renderNarrative(narrative);
+    renderRecommendations(recs);
+    $('shareText').value = buildShareText(inputs, model, recs);
+  }
+
+  // ---------- Wire events ----------
+  [storageAccounts, sharepointSites, agents, classification].forEach(el => el.addEventListener('input', update));
+  [rbac, dlp, discovery].forEach(el => el.addEventListener('change', update));
+  categoryGrid.addEventListener('change', update);
+
+  // Copy
+  $('copyBtn').addEventListener('click', () => {
+    const ta = $('shareText');
+    ta.select();
+    try {
+      navigator.clipboard.writeText(ta.value).then(() => {
+        const btn = $('copyBtn');
+        const old = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 1800);
+      });
+    } catch (e) {
+      document.execCommand('copy');
+    }
+  });
+
+  // Download
+  $('downloadBtn').addEventListener('click', () => {
+    const text = $('shareText').value;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `dspm-posture-summary-${stamp}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // Initial render
+  update();
+})();
+</script>
+
+</body>
+</html>
