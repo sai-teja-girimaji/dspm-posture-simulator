@@ -9,6 +9,8 @@ A browser-based interactive tool that computes an **Azure AI agent data exposure
 
 > Designed as a practitioner's framing tool for security, GRC, and cloud-architecture conversations. Not a vendor demo, not a replacement for an actual DSPM assessment.
 
+![DSPM Posture Simulator — overview screenshot](docs/screenshot.png)
+
 ---
 
 ## Live Demo
